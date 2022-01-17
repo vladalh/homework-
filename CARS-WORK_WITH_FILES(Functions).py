@@ -3,42 +3,38 @@ import json
 
 
 def cou(country):
-    list_us = []
-    lit_europe = []
-    list_japan = []
+    list_car = []
+    list_car_2 = []
     with open('cars.csv', 'r', encoding='utf-8') as f:
-        f = csv.reader(f)
+        csv_reader = csv.reader(f, delimiter=";")
 
-        for i in f:
-            i = " ".join(i)
-            i = i.split(';')
-            if i[-1] == country:
-                list_japan.append(i[0])
+        for i in csv_reader:
+            list_car.append(i)
 
-            elif i[-1] == country:
-                list_us.append(i[0])
+        for line in list_car:
+            if country in line:
+                list_car_2.append(line)
+                list_car_2.sort(key=lambda x:x[0])
+    return list_car_2
 
-            elif i[-1] == country:
-                lit_europe.append(i[0])
-    return list_us, list_japan, lit_europe
+
+def save_file(save_format, country, lst):
+    with open(f'cars-model_{country}.{save_format}', 'w', encoding='utf-8') as file:
+        for car in lst:
+            car_tuple = tuple(car)
+            if save_format == "txt":
+                car = " ".join(car) + "\n"
+                txt_file = file.write(car)
+            elif save_format == "csv":
+                csv_file = csv.writer(file, dialect="excel")
+                csv_file.writerow(car_tuple)
+            elif save_format == "json":
+                json_file = json.dump(lst, file, indent=4)
 
 
 country_to_enter = input('Enter country :Japan, US, Europe: ')
 
+save_format = input('Enter format: txt; csv; json: ')
 
-cou = cou(country_to_enter)
-
-
-def save_file(save):
-    if save == '.csv':
-        file = open('cars-model.csv', 'w', encoding='utf-8')
-        file.write(str(cou[1]))
-    elif save == '.txt':
-        file = open('cars-model.txt', 'w', encoding='utf-8')
-        file.write(str(cou[1]))
-
-
-save_format = input('Enter format: .txt; .csv: ')
-save_file(save_format)
-
+save_file(save_format, country_to_enter, cou(country_to_enter))
 
